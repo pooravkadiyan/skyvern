@@ -1,0 +1,2 @@
+browser-use[aws]
+boto3

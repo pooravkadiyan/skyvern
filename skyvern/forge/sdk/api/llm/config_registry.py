@@ -935,6 +935,18 @@ if settings.ENABLE_BEDROCK:
             temperature=1,
         ),
     )
+    if settings.IGNARIX_BEDROCK_MODEL_ID:
+        _register_builtin_config(
+            "IGNARIX_BEDROCK",
+            LLMConfig(
+                f"bedrock/{settings.IGNARIX_BEDROCK_MODEL_ID}",
+                ["AWS_REGION"],
+                supports_vision=True,
+                add_assistant_prefix=False,
+                max_completion_tokens=64000,
+                temperature=1,
+            ),
+        )
 
 
 if settings.ENABLE_AZURE:

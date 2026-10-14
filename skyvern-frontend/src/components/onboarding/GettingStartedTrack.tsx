@@ -17,16 +17,6 @@ import {
   type OnboardingTrackV1,
   type TrackKey,
 } from "@/routes/root/useOnboardingTrack";
-import {
-  DISCORD_INVITE_URL,
-  DOCS_API_QUICKSTART_URL,
-  DOCS_CREDENTIALS_URL,
-  DOCS_MCP_URL,
-  DOCS_SCHEDULING_URL,
-  GITHUB_REPO_URL,
-  LINKEDIN_URL,
-  X_URL,
-} from "@/util/externalLinks";
 
 type FirstAgentKey =
   | "account_created"
@@ -69,15 +59,11 @@ const firstAgentSteps: ReadonlyArray<{
       label: "Describe your first agent",
       to: "/discover?focus=prompt",
     },
-    howItWorks:
-      "https://www.skyvern.com/docs/cloud/building-agents/build-an-agent",
   },
   {
     key: "first_successful_run",
     title: "Run your first agent",
     action: { label: "Run agent", to: "/agents" },
-    howItWorks:
-      "https://www.skyvern.com/docs/cloud/building-agents/run-an-agent",
   },
 ];
 
@@ -91,13 +77,11 @@ const rowDefinitions: Record<TrackKey, RowDefinition> = {
     title: "Run your agent automatically",
     why: "Set a schedule so it runs without you",
     links: [{ label: "Open schedules", to: "/schedules" }],
-    howItWorks: DOCS_SCHEDULING_URL,
   },
   first_api_run: {
     title: "Run an agent from your own code",
     why: "Start a run with an API key from any script",
     links: [{ label: "Get an API key", to: "/settings#api-keys" }],
-    howItWorks: DOCS_API_QUICKSTART_URL,
   },
   agent_edited: {
     title: "Edit an agent in the editor",
@@ -122,7 +106,7 @@ const rowDefinitions: Record<TrackKey, RowDefinition> = {
   mcp_installed: {
     title: "Use Skyvern from Claude, Cursor, or ChatGPT",
     why: "Install the MCP server and run agents from your AI tools",
-    links: [{ label: "Set up MCP", href: DOCS_MCP_URL }],
+    links: [{ label: "Open settings", to: "/settings" }],
   },
   teammate_invited: {
     title: "Bring a teammate",
@@ -133,25 +117,21 @@ const rowDefinitions: Record<TrackKey, RowDefinition> = {
     title: "Let your agent log in for you",
     why: "Save a login and 2FA code once; your agents reuse it",
     links: [{ label: "Add a credential", to: "/credentials" }],
-    howItWorks: DOCS_CREDENTIALS_URL,
   },
   github_starred: {
     title: "Star Skyvern on GitHub",
     why: "Skyvern is open source",
-    links: [{ label: "Star on GitHub", href: GITHUB_REPO_URL }],
+    links: [],
   },
   discord_joined: {
     title: "Join the Discord",
     why: "Get help from the team and other builders",
-    links: [{ label: "Join Discord", href: DISCORD_INVITE_URL }],
+    links: [],
   },
   social_followed: {
     title: "Follow for updates",
     why: "Product updates as they ship",
-    links: [
-      { label: "Follow on X", href: X_URL },
-      { label: "Follow on LinkedIn", href: LINKEDIN_URL },
-    ],
+    links: [],
   },
 };
 
@@ -168,11 +148,7 @@ const intentFirstRow: Record<string, TrackKey> = {
   extract_data: "first_api_run",
   monitor_website: "first_scheduled_run",
 };
-const communityOrder: readonly TrackKey[] = [
-  "github_starred",
-  "discord_joined",
-  "social_followed",
-];
+const communityOrder: readonly TrackKey[] = [];
 
 const rowClassName =
   "grid grid-cols-[22px_1fr] items-start gap-3.5 border-b border-neutral-200 px-1 py-3 last:border-b-0 dark:border-white/[0.06] sm:grid-cols-[22px_minmax(0,1fr)_auto] sm:items-center";
@@ -760,22 +736,24 @@ function GettingStartedTrack({
         </ol>
       </TrackGroup>
 
-      <TrackGroup label="Stay in the loop" meta="Optional">
-        <ol>
-          {community.map((row) => (
-            <TrackRow
-              key={row.key}
-              item={row}
-              index={null}
-              state={row.completed_at !== null ? "complete" : "upcoming"}
-              primary={false}
-              onAttest={onAttest}
-              isPending={isPending}
-              detail={rowDetails?.[row.key]}
-            />
-          ))}
-        </ol>
-      </TrackGroup>
+      {community.length > 0 ? (
+        <TrackGroup label="Stay in the loop" meta="Optional">
+          <ol>
+            {community.map((row) => (
+              <TrackRow
+                key={row.key}
+                item={row}
+                index={null}
+                state={row.completed_at !== null ? "complete" : "upcoming"}
+                primary={false}
+                onAttest={onAttest}
+                isPending={isPending}
+                detail={rowDetails?.[row.key]}
+              />
+            ))}
+          </ol>
+        </TrackGroup>
+      ) : null}
     </section>
   );
 }

@@ -1076,30 +1076,19 @@ function PasswordCredentialContent({
                     </p>
                   </div>
                   <p className="text-sm text-slate-400">
-                    {enterpriseContactUrl && (
-                      <>
-                        <Link
-                          to={enterpriseContactUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="underline underline-offset-2"
-                        >
-                          Contact us to set up two-factor authentication in
-                          workflows
-                        </Link>{" "}
-                        or{" "}
-                      </>
+                    {enterpriseContactUrl ? (
+                      <Link
+                        to={enterpriseContactUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline underline-offset-2"
+                      >
+                        Contact us to set up two-factor authentication in
+                        workflows.
+                      </Link>
+                    ) : (
+                      "Save this identifier so the agent can use the code during a workflow."
                     )}
-                    <Link
-                      to="https://www.skyvern.com/docs/running-tasks/advanced-features#time-based-one-time-password-totp"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline underline-offset-2"
-                    >
-                      {enterpriseContactUrl ? "see" : "See"} our documentation
-                      on how to set up two-factor authentication in workflows
-                    </Link>{" "}
-                    to get started.
                   </p>
                 </>
               )}

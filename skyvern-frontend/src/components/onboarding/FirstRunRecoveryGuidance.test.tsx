@@ -197,10 +197,10 @@ describe("FirstRunRecoveryGuidance", () => {
       />,
     );
 
-    fireEvent.click(getByTestId("recovery-path-view_docs"));
+    fireEvent.click(getByTestId("recovery-path-contact_support"));
 
     expect(open).toHaveBeenCalledWith(
-      "https://docs.skyvern.com",
+      "mailto:support@skyvern.com",
       "_blank",
       "noopener,noreferrer",
     );

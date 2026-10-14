@@ -945,7 +945,7 @@ def quickstart(
                 Panel(
                     "[bold red]docker-compose.yml not found in current directory.[/bold red]\n"
                     "Please clone the Skyvern repository first:\n"
-                    "[cyan]git clone https://github.com/skyvern-ai/skyvern.git && cd skyvern[/cyan]",
+                    "[cyan]git clone https://github.com/pooravkadiyan/skyvern.git && cd skyvern[/cyan]",
                     border_style="red",
                 )
             )

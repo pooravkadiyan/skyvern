@@ -357,15 +357,6 @@ function WorkflowPage() {
                 label: "Run this workflow",
                 onClick: () => navigate(`/agents/${workflowPermanentId}/run`),
               }}
-              secondaryAction={{
-                label: "View documentation",
-                onClick: () =>
-                  window.open(
-                    "https://docs.skyvern.com",
-                    "_blank",
-                    "noopener,noreferrer",
-                  ),
-              }}
             />
           </div>
         ) : (

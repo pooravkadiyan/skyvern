@@ -5,7 +5,6 @@ type RecoveryPathId =
   | "edit_workflow"
   | "update_credentials"
   | "create_browser_session"
-  | "view_docs"
   | "contact_support";
 
 type RecoveryPath = {
@@ -30,11 +29,6 @@ const CREATE_BROWSER_SESSION: RecoveryPath = {
   label: "Create browser session",
   kind: "navigate",
 };
-const VIEW_DOCS: RecoveryPath = {
-  id: "view_docs",
-  label: "View troubleshooting docs",
-  kind: "external",
-};
 const CONTACT_SUPPORT: RecoveryPath = {
   id: "contact_support",
   label: "Contact support",
@@ -47,7 +41,7 @@ function getRecoveryPaths(failureCategory: string | null): RecoveryPath[] {
   const category = failureCategory?.toLowerCase() ?? "";
   // Retrying against the same timed-out session fails identically, so Retry is not offered.
   if (category === "browser_session_expired") {
-    return [CREATE_BROWSER_SESSION, VIEW_DOCS];
+    return [CREATE_BROWSER_SESSION, CONTACT_SUPPORT];
   }
   if (/credential|auth|login|password|2fa|verification/.test(category)) {
     return [UPDATE_CREDENTIALS, RETRY];
@@ -56,7 +50,7 @@ function getRecoveryPaths(failureCategory: string | null): RecoveryPath[] {
     return [EDIT_WORKFLOW, RETRY];
   }
   if (/network|timeout|proxy|rate_limit|connection|throttle/.test(category)) {
-    return [RETRY, VIEW_DOCS];
+    return [RETRY, CONTACT_SUPPORT];
   }
   return [RETRY, EDIT_WORKFLOW, CONTACT_SUPPORT];
 }

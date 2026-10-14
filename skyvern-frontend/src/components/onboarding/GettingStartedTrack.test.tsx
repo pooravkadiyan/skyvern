@@ -139,15 +139,11 @@ it("renders the three first-agent steps with their shipped destinations", () => 
   expect(rows[2]?.contains(runLink)).toBe(true);
   expect(runLink.getAttribute("href")).toBe("/agents");
   expect(
-    within(screen.getByRole("region", { name: "First agent" }))
-      .getAllByRole("link", {
-        name: /How it works.*opens in new tab/,
-      })
-      .map((link) => link.getAttribute("href")),
-  ).toEqual([
-    "https://www.skyvern.com/docs/cloud/building-agents/build-an-agent",
-    "https://www.skyvern.com/docs/cloud/building-agents/run-an-agent",
-  ]);
+    within(screen.getByRole("region", { name: "First agent" })).queryByRole(
+      "link",
+      { name: /How it works.*opens in new tab/ },
+    ),
+  ).toBeNull();
 });
 
 it("renders no filled action after all required rows are complete", () => {
@@ -161,9 +157,7 @@ it("renders no filled action after all required rows are complete", () => {
     { progress: completedProgress },
   );
   expect(primaryLinks()).toHaveLength(0);
-  expect(
-    screen.getByRole("button", { name: "Mark Star Skyvern on GitHub done" }),
-  ).toBeTruthy();
+  expect(screen.queryByRole("region", { name: "Stay in the loop" })).toBeNull();
 });
 
 it.each([
@@ -223,11 +217,7 @@ it("labels required group completion and community work as optional", () => {
       { selector: "span" },
     ),
   ).toBeTruthy();
-  expect(
-    within(screen.getByRole("region", { name: "Stay in the loop" })).getByText(
-      "Optional",
-    ),
-  ).toBeTruthy();
+  expect(screen.queryByRole("region", { name: "Stay in the loop" })).toBeNull();
 });
 
 it("orders Keep going by intent after first-agent work is complete", () => {
@@ -246,21 +236,13 @@ it("orders Keep going by intent after first-agent work is complete", () => {
   );
   expect(screen.queryByRole("region", { name: "Bring your team" })).toBeNull();
   expect(screen.queryByText("Bring a teammate")).toBeNull();
-  expect(titlesIn("Stay in the loop")).toEqual([
-    "Upcoming step: Star Skyvern on GitHub",
-    "Upcoming step: Join the Discord",
-    "Upcoming step: Follow for updates",
-  ]);
+  expect(screen.queryByRole("region", { name: "Stay in the loop" })).toBeNull();
   expect(
-    within(screen.getByRole("region", { name: "Keep going" }))
-      .getAllByRole("link", {
-        name: /How it works.*opens in new tab/,
-      })
-      .map((link) => link.getAttribute("href")),
-  ).toEqual([
-    "https://www.skyvern.com/docs/developers/getting-started/quickstart",
-    "https://www.skyvern.com/docs/developers/features/authentication-and-2fa",
-  ]);
+    within(screen.getByRole("region", { name: "Keep going" })).queryByRole(
+      "link",
+      { name: /How it works.*opens in new tab/ },
+    ),
+  ).toBeNull();
 });
 
 it("uses agent copy and leads a nine-item Keep going group with the second-agent detail", () => {
@@ -318,61 +300,15 @@ it("does not label a Free group done while its locked row remains", () => {
   ).toBeTruthy();
 });
 
-it("uses the community ring as the attest control and keeps links enabled while pending", () => {
-  const props = renderTrack(track([]));
-  const ring = screen.getByRole("button", {
-    name: "Mark Join the Discord done",
-  });
-  fireEvent.click(ring);
-  expect(props.onAttest).toHaveBeenCalledWith("discord_joined");
+it("keeps action links enabled", () => {
+  renderTrack(track([]));
   expect(screen.queryByText("Mark done")).toBeNull();
   expect(screen.queryByText("Hide for now")).toBeNull();
-
-  cleanup();
-  const pending = renderTrack(track([]), { isPending: true });
-  const pendingRing = screen.getByRole("button", {
-    name: "Mark Star Skyvern on GitHub done",
-  });
-  expect(pendingRing.getAttribute("aria-disabled")).toBe("true");
-  expect(pendingRing.getAttribute("aria-busy")).toBe("true");
-  fireEvent.click(pendingRing);
-  expect(pending.onAttest).not.toHaveBeenCalled();
-  expect(
-    screen
-      .getAllByRole("button")
-      .filter((button) => button.hasAttribute("aria-disabled"))
-      .every((button) =>
-        button.getAttribute("aria-label")?.startsWith("Mark "),
-      ),
-  ).toBe(true);
   for (const link of screen.getAllByRole("link")) {
     expect(link.hasAttribute("aria-disabled")).toBe(false);
     expect(link.className).not.toContain("pointer-events-none");
     expect(link.className).not.toContain("opacity-");
   }
-});
-
-it("replaces a completed community ring with the done badge", () => {
-  renderTrack(track(["github_starred"]));
-  const completedRow = screen.getByText("Star Skyvern on GitHub").closest("li");
-  expect(completedRow).not.toBeNull();
-  expect(
-    within(completedRow!).queryByRole("button", { name: /Mark .* done/ }),
-  ).toBeNull();
-  expect(completedRow!.querySelector('[aria-hidden="true"] svg')).toBeTruthy();
-
-  const incompleteRow = screen.getByText("Join the Discord").closest("li");
-  expect(incompleteRow).not.toBeNull();
-  expect(
-    within(incompleteRow!).getByRole("button", {
-      name: "Mark Join the Discord done",
-    }),
-  ).toBeTruthy();
-  expect(
-    within(incompleteRow!).getByRole("link", {
-      name: /Join Discord.*opens in new tab/,
-    }),
-  ).toBeTruthy();
 });
 
 it("keeps the progress live region mounted while idle", () => {

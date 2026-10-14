@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-_DOCUMENTATION_URL = "https://www.skyvern.com/docs"
-_SOURCE_URL = "https://github.com/Skyvern-AI/skyvern"
+_SOURCE_URL = "https://github.com/pooravkadiyan/skyvern"
 _API_KEY_HEADER = "x-api-key"
 
 
@@ -30,7 +29,6 @@ def build_server_card(
             "scheme": "api-key",
             "header": _API_KEY_HEADER,
         },
-        "documentation": _DOCUMENTATION_URL,
         "source": _SOURCE_URL,
     }
 

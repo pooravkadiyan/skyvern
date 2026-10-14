@@ -41,11 +41,13 @@ def _is_local_request(request: Request) -> bool:
     except ValueError:
         LOG.warning("Invalid IP address in request", host=host)
         return False
-    is_local = addr.is_loopback
+    # Docker port publishing presents the host as a private bridge address, not loopback.
+    is_local = addr.is_loopback or (settings.ENV == "local" and addr.is_private)
     LOG.info(
         "Checking if request is local",
         host=host,
         is_loopback=addr.is_loopback,
+        is_private=addr.is_private,
         is_local=is_local,
     )
     return is_local

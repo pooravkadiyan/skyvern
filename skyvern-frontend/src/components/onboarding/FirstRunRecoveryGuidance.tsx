@@ -14,7 +14,6 @@ import {
 import { useWorkflowStudioEnabled } from "@/hooks/useWorkflowStudioEnabled";
 import { workflowEditorPath } from "@/routes/workflows/studioNavigation";
 
-const DOCS_URL = "https://docs.skyvern.com";
 const SUPPORT_URL = "mailto:support@skyvern.com";
 
 type Props = Readonly<{
@@ -81,11 +80,7 @@ function FirstRunRecoveryGuidance({
     }
 
     if (path.kind === "external") {
-      window.open(
-        path.id === "contact_support" ? SUPPORT_URL : DOCS_URL,
-        "_blank",
-        "noopener,noreferrer",
-      );
+      window.open(SUPPORT_URL, "_blank", "noopener,noreferrer");
       return;
     }
 

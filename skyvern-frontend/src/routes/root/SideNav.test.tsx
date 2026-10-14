@@ -5,8 +5,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { SideNav } from "./SideNav";
 import { useSidebarStore } from "@/store/SidebarStore";
 
-const capture = vi.fn();
-const mutate = vi.fn();
+vi.mock("posthog-js/react", () => ({
+  useFeatureFlagEnabled: () => false,
+  usePostHog: () => ({
+    capture: vi.fn(),
+  }),
+}));
 
 function LocationProbe() {
   const location = useLocation();
@@ -18,12 +22,7 @@ function LocationProbe() {
   );
 }
 
-vi.mock("posthog-js/react", () => ({
-  useFeatureFlagEnabled: () => false,
-  usePostHog: () => ({
-    capture,
-  }),
-}));
+const mutate = vi.fn();
 
 vi.mock("@/routes/workflows/hooks/useCreateWorkflowMutation", () => ({
   useCreateWorkflowMutation: () => ({
@@ -47,7 +46,6 @@ describe("SideNav", () => {
     useSidebarStore.setState({ collapsed: false });
     setViewportHeight(1024);
     mutate.mockClear();
-    capture.mockClear();
   });
 
   it("creates a new agent from the sidebar", () => {
@@ -71,53 +69,6 @@ describe("SideNav", () => {
     );
   });
 
-  it("captures recipe clicks with the legacy sidebar agent event", () => {
-    window.localStorage.clear();
-    setViewportHeight(1024);
-
-    render(
-      <MemoryRouter>
-        <SideNav />
-      </MemoryRouter>,
-    );
-
-    fireEvent.click(screen.getByRole("link", { name: "Healthcare" }));
-
-    expect(capture).toHaveBeenCalledWith("sidebar.agent.clicked", {
-      agent: "healthcare",
-      destination: "/recipes/healthcare",
-      disabled: false,
-      beta: true,
-      badge: "Beta",
-    });
-  });
-
-  it("captures recipe clicks from the collapsed sidebar menu", async () => {
-    useSidebarStore.setState({ collapsed: true });
-
-    render(
-      <MemoryRouter>
-        <SideNav />
-      </MemoryRouter>,
-    );
-
-    fireEvent.pointerDown(screen.getByTitle("Recipes"), {
-      button: 0,
-      ctrlKey: false,
-    });
-    fireEvent.click(
-      await screen.findByRole("menuitem", { name: "Healthcare" }),
-    );
-
-    expect(capture).toHaveBeenCalledWith("sidebar.agent.clicked", {
-      agent: "healthcare",
-      destination: "/recipes/healthcare",
-      disabled: false,
-      beta: true,
-      badge: "Beta",
-    });
-  });
-
   it("navigates to the parent route when clicking a collapsed group icon", () => {
     useSidebarStore.setState({ collapsed: true });
 
@@ -133,37 +84,10 @@ describe("SideNav", () => {
     expect(screen.getByTestId("location").textContent).toBe("/agents");
   });
 
-  it("starts recipes collapsed on short screens", () => {
-    window.localStorage.clear();
-    setViewportHeight(860);
-
-    render(
-      <MemoryRouter>
-        <SideNav />
-      </MemoryRouter>,
-    );
-
-    expect(screen.queryByRole("link", { name: "Healthcare" })).toBeNull();
-    expect(screen.getByRole("button", { name: /Recipes/i })).toBeTruthy();
-  });
-
-  it("starts recipes expanded on tall screens", () => {
-    window.localStorage.clear();
-    setViewportHeight(1024);
-
-    render(
-      <MemoryRouter>
-        <SideNav />
-      </MemoryRouter>,
-    );
-
-    expect(screen.getByRole("link", { name: "Healthcare" })).toBeTruthy();
-  });
-
   it("does not duplicate expanded group labels inside their children", () => {
     window.localStorage.setItem(
       "skyvern-sidebar-open-groups",
-      JSON.stringify({ "/recipes": true, "/credentials": true }),
+      JSON.stringify({ "/credentials": true }),
     );
     setViewportHeight(1024);
 
@@ -173,7 +97,6 @@ describe("SideNav", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getAllByText("Recipes")).toHaveLength(1);
     expect(screen.getAllByText("Credentials")).toHaveLength(1);
   });
 
@@ -208,10 +131,10 @@ describe("SideNav", () => {
     ).toBe("/credentials?tab=magicLinks");
   });
 
-  it("preserves a stored recipes state on short screens", () => {
+  it("preserves a stored credentials state on short screens", () => {
     window.localStorage.setItem(
       "skyvern-sidebar-open-groups",
-      JSON.stringify({ Recipes: true }),
+      JSON.stringify({ "/credentials": true }),
     );
     setViewportHeight(860);
 
@@ -221,12 +144,12 @@ describe("SideNav", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("link", { name: "Healthcare" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Passwords" })).toBeTruthy();
   });
 
   it("uses route keys for persisted group state without rewriting storage on mount", () => {
     const storedState = {
-      "/recipes": true,
+      "/credentials": true,
       "/future-section": false,
     };
     window.localStorage.setItem(
@@ -241,7 +164,7 @@ describe("SideNav", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("link", { name: "Healthcare" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Passwords" })).toBeTruthy();
     expect(
       JSON.parse(
         window.localStorage.getItem("skyvern-sidebar-open-groups") ?? "{}",

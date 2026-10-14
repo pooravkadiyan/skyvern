@@ -42,7 +42,7 @@ setup_app = typer.Typer(
 
 _DEFAULT_REMOTE_URL = "https://api.skyvern.com/mcp/"
 _DEFAULT_CLAUDE_DESKTOP_BUNDLE_URL = (
-    "https://github.com/Skyvern-AI/skyvern/raw/main/skyvern/cli/mcpb/releases/skyvern-claude-desktop.mcpb"
+    "https://github.com/pooravkadiyan/skyvern/raw/main/skyvern/cli/mcpb/releases/skyvern-claude-desktop.mcpb"
 )
 _JSON5_COMMENT_RE = re.compile(r"(?<!:)//|/\*")
 _JSON5_TRAILING_COMMA_RE = re.compile(r",\s*[}\]]")

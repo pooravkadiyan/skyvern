@@ -527,6 +527,9 @@ class Settings(BaseSettings):
     ENABLE_AZURE_GPT4O_MINI: bool = False
     ENABLE_AZURE_O3_MINI: bool = False
     ENABLE_BEDROCK: bool = False
+    # Any Bedrock model id on the Ignarix account. Registered as LLM key IGNARIX_BEDROCK
+    # when ENABLE_BEDROCK is true. Example: us.anthropic.claude-sonnet-4-6
+    IGNARIX_BEDROCK_MODEL_ID: str | None = None
     ENABLE_GEMINI: bool = False
     ENABLE_VERTEX_AI: bool = False
     ENABLE_AZURE_CUA: bool = False
